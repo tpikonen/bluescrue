@@ -18,13 +18,24 @@ class ScanDelegate(DefaultDelegate):
         self.ev.set()
         if self.devices and not dev.addr in self.devices: return
         for (adtype, desc, value) in dev.getScanData():
-            if adtype==255 and value[:4]=="9904": # Ruuvitag
+            if adtype==255 and value[:4]=="9904": # Ruuvitag raw
                 if self.raw:
                     self.cb((value, dev.addr, dev.rssi))
                 else:
                     intime = time.time()
                     data = bytearray.fromhex(value[4:])
                     decoded = ruuvitag_decode(data)
+                    decoded["mac"] = dev.addr
+                    decoded["rssi"] = dev.rssi
+                    decoded["time"] = intime
+                    self.cb(decoded)
+            elif adtype==22 and value[:4]=="aafe": # Ruuvitag eddystone
+                if self.raw:
+                    self.cb((value, dev.addr, dev.rssi))
+                else:
+                    intime = time.time()
+                    data = bytearray.fromhex(value[4:])
+                    decoded = ruuvitag_eddystone_decode(data)
                     decoded["mac"] = dev.addr
                     decoded["rssi"] = dev.rssi
                     decoded["time"] = intime
