@@ -59,10 +59,8 @@ def reset_btadapter():
             subprocess.call(['kill', '-s', 'SIGINT', str(process.pid)])
 
     # do a 'sudo setcap 'cap_net_raw,cap_net_admin+eip' `which hciconfig`' to avoid sudo
-    #subprocess.call('hciconfig hci0 reset', shell=True, stdout=subprocess.DEVNULL)
-    subprocess.call('hciconfig hci0 reset', shell=True)
-    #hcitool = subprocess.Popen(['hcitool', 'lescan', '--duplicates'], stdout=subprocess.DEVNULL)
-    hcitool = subprocess.Popen(['hcitool', 'lescan', '--duplicates'])
+    subprocess.call('hciconfig hci0 reset', shell=True, stdout=subprocess.DEVNULL)
+    hcitool = subprocess.Popen(['hcitool', 'lescan', '--duplicates'], stdout=subprocess.DEVNULL)
     time.sleep(10)
     kill_child_processes(hcitool.pid)
     subprocess.call(['kill', '-s', 'SIGINT', str(hcitool.pid)])
